@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "lamoomcicd"
+version = "0.1.0"
+description = "Library to test prompt quality"
+authors = ["Artyom Maisiuk <artyom.majsyuk@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+lamoom = "^0.1.33"
+dotenv = "^0.9.9"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
