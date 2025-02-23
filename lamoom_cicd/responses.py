@@ -28,5 +28,6 @@ class Score:
         
 @dataclass(kw_only=True)
 class TestResult:
+    prompt_id: str
     questions: list[Question]
     score: Score
