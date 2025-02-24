@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
-from prompts.prompt_generate_facts import agent as generate_facts_agent
-from prompts.prompt_compare_results import agent as compare_results_agent
+from lamoom_cicd.prompts.prompt_generate_facts import agent as generate_facts_agent
+from lamoom_cicd.prompts.prompt_compare_results import agent as compare_results_agent
 
 from lamoom_cicd.responses import Question, TestResult, Score
 from lamoom_cicd.exceptions import GenerateFactsException
@@ -31,7 +31,7 @@ default_behaviour = AIModelsBehaviour(
 
 
 @dataclass(kw_only=True)
-class TestLLMResponse:
+class TestLLMResponsePipe:
     lamoom_token: str = None
     openai_key: str = None
     azure_keys: dict = None
@@ -70,7 +70,7 @@ class TestLLMResponse:
         return Score(score, passed)
     
     def compare(self, ideal_answer: str, 
-                llm_response: str = None, 
+                llm_response: str, 
                 optional_params: dict = None) -> TestResult:
         lamoom = Lamoom(openai_key=self.openai_key, api_token=self.lamoom_token)
         
@@ -80,21 +80,22 @@ class TestLLMResponse:
         result = get_json_from_response(response).parsed_content
         statements, questions = result.get("statements"), result.get("questions")
         generated_test = json.dumps(self.get_generated_test(statements, questions))
-
+        user_prompt_response = llm_response
+        prompt_id = "user_prompt"
         if optional_params is not None:
-            # Call user's LLM prompt
-            user_prompt_content = optional_params.get('prompt', None) 
-            user_context = optional_params.get('context', {})
-            if user_prompt_content is None:
-                # Sync with Service and fetch online prompt
-                user_prompt = lamoom.get_prompt(prompt_id=optional_params.get('prompt_id'))
-            else:
-                user_prompt = PipePrompt(id="user_prompt")
-                user_prompt.add(user_prompt_content)
-            user_result = lamoom.call(user_prompt.id, user_context, default_behaviour)
-            user_prompt_response = user_result.content
-        else:
-            user_prompt_response = llm_response
+            logger.info(optional_params)
+            prompt_id = optional_params.get('prompt_id', "user_prompt")
+            # TODO: Service CI/CD Logic
+            # user_prompt_content = optional_params.get('prompt', None) 
+            # user_context = optional_params.get('context', {})
+            # if user_prompt_content is None:
+            #     # Sync with Service and fetch online prompt
+            #     user_prompt = lamoom.get_prompt(prompt_id=optional_params.get('prompt_id'))
+            # else:
+            #     user_prompt = PipePrompt(id="user_prompt")
+            #     user_prompt.add(user_prompt_content)
+            # user_result = lamoom.call(user_prompt.id, user_context, default_behaviour)
+            # user_prompt_response = user_result.content
 
         # Compare results
         comparison_context = {
@@ -112,8 +113,11 @@ class TestLLMResponse:
         ]
         
         score = self.calculate_score(test_results, self.threshold)
+        
+        test_result = TestResult(prompt_id=prompt_id, questions=questions_list, score=score)
+        self.accumulated_results.append(test_result)
 
-        return TestResult(prompt_id=user_prompt.id, questions=questions_list, score=score)
+        return test_result
     
     
     def compare_from_csv(self, csv_file: str) -> list[TestResult]:
@@ -129,7 +133,7 @@ class TestLLMResponse:
         for row in test_cases:
             ideal_answer = row.get("ideal_answer")
             llm_response = row.get("llm_response")
-            optional_params = json.loads(row.get("optional_params"))
+            optional_params = row.get("optional_params")
             test_result = self.compare(ideal_answer, llm_response, optional_params)
             self.accumulated_results.append(test_result)
             results.append(test_result)

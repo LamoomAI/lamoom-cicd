@@ -1,16 +1,21 @@
 [tool.poetry]
-name = "lamoomcicd"
-version = "0.1.0"
+name = "lamoom-cicd"
+version = "0.1.4"
 description = "Library to test prompt quality"
-authors = ["Artyom Maisiuk <artyom.majsyuk@gmail.com>"]
+authors = ["Lamoom Engineering Team <engineering@lamoom.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
 lamoom = "^0.1.33"
-dotenv = "^0.9.9"
 matplotlib = "^3.10.0"
 pandas = "^2.2.3"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+python-dotenv = "^1.0.1"
+twine = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,3 +1,3 @@
-from .test_llm_response import TestLLMResponse
+from .test_llm_response import TestLLMResponsePipe
 
-__all__ = ["TestLLMResponse"]
+__all__ = ["TestLLMResponsePipe"]
