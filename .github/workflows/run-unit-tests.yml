@@ -32,4 +32,11 @@ jobs:
         run: poetry install
       
       - name: Run tests with coverage
-        run: poetry run pytest --cache-clear -vv tests --cov='lamoom_cicd' --cov-fail-under=80 --cov-report term-missing
+        run: |
+          poetry run make test
+
+      - name: Publish package
+        env:
+          PYPI_API_KEY: ${{ secrets.PYPI_API_KEY }}
+        run: |
+          poetry run make publish-release
