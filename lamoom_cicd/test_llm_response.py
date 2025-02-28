@@ -1,6 +1,6 @@
 import json
 import logging
-from lamoom import Lamoom, AIModelsBehaviour, AttemptToCall, OpenAIModel, C_128K, PipePrompt
+from lamoom import Lamoom
 from lamoom.response_parsers.response_parser import get_json_from_response
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -15,19 +15,6 @@ from lamoom_cicd.exceptions import GenerateFactsException
 from lamoom_cicd.utils import parse_csv_file
 
 logger = logging.getLogger(__name__)
-
-default_behaviour = AIModelsBehaviour(
-    attempts=[
-        AttemptToCall(
-            ai_model=OpenAIModel(
-                model="gpt-4o", #o3-mini
-                max_tokens=C_128K,
-                support_functions=True,
-            ),
-            weight=100,
-        ),
-    ],
-)
 
 
 @dataclass(kw_only=True)
@@ -72,7 +59,7 @@ class TestLLMResponsePipe:
         lamoom = Lamoom(openai_key=self.openai_key, api_token=self.lamoom_token)
         
         # Generate test questions based on the ideal answer
-        response = lamoom.call(generate_facts_agent.id, {"ideal_answer": ideal_answer}, default_behaviour)
+        response = lamoom.call(generate_facts_agent.id, {"ideal_answer": ideal_answer}, "openai/o3-mini")
 
         result = get_json_from_response(response).parsed_content
         statements, questions = result.get("statements"), result.get("questions")
@@ -83,16 +70,6 @@ class TestLLMResponsePipe:
             logger.info(optional_params)
             prompt_id = optional_params.get('prompt_id', "user_prompt")
             # TODO: Service CI/CD Logic
-            # user_prompt_content = optional_params.get('prompt', None) 
-            # user_context = optional_params.get('context', {})
-            # if user_prompt_content is None:
-            #     # Sync with Service and fetch online prompt
-            #     user_prompt = lamoom.get_prompt(prompt_id=optional_params.get('prompt_id'))
-            # else:
-            #     user_prompt = PipePrompt(id="user_prompt")
-            #     user_prompt.add(user_prompt_content)
-            # user_result = lamoom.call(user_prompt.id, user_context, default_behaviour)
-            # user_prompt_response = user_result.content
 
         # Compare results
         comparison_context = {
@@ -100,7 +77,7 @@ class TestLLMResponsePipe:
             "user_prompt_response": user_prompt_response,
         }
 
-        comparison_response = lamoom.call(compare_results_agent.id, comparison_context, default_behaviour)
+        comparison_response = lamoom.call(compare_results_agent.id, comparison_context, "openai/o3-mini")
         test_results = get_json_from_response(comparison_response).parsed_content
 
         # Format results into Question objects
