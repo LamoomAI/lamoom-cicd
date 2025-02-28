@@ -1,6 +1,6 @@
 from lamoom import PipePrompt
 
-agent = PipePrompt(id='generate_facts')
+agent = PipePrompt(id='lamoom_cicd__generate_facts')
 agent.add("""
 You're generating statements for the provided text below.
 """, role='system')
@@ -26,7 +26,7 @@ Use the next json format for the answer:
         "another_statement_from_ideal_answer": "question_to_answer_by_that_another_statement",
         ...,
         "qN": "statementN",
-    }
+    },
     "name": "when_what_why_generated_name"
 }
 ```
