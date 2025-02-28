@@ -88,7 +88,14 @@ class TestLLMResponsePipe:
         
         score = self.calculate_score(test_results, self.threshold)
         
-        test_result = TestResult(prompt_id=prompt_id, questions=questions_list, score=score)
+        test_result = TestResult(
+            prompt_id=prompt_id,
+            questions=questions_list,
+            score=score,
+            ideal_response=ideal_answer,
+            llm_response=llm_response,
+            optional_params=optional_params
+        )
         self.accumulated_results.append(test_result)
 
         return test_result
