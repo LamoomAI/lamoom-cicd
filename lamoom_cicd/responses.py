@@ -1,18 +1,18 @@
 from dataclasses import dataclass
 
 class Question:
-    def __init__(self, question: str, answer: str, ideal_answer: str, comparison: bool):
+    def __init__(self, question: str, answer_by_llm: str, ideal_answer: str, match: bool):
         self.question = question
-        self.answer = answer
+        self.answer_by_llm = answer_by_llm
         self.ideal_answer = ideal_answer
-        self.comparison = comparison
+        self.match = match
 
     def to_dict(self):
         return {
             "question": self.question,
-            "answer": self.answer,
+            "answer_by_llm": self.answer_by_llm,
             "ideal_answer": self.ideal_answer,
-            "comparison": self.comparison
+            "match": self.match
         }
         
 class Score:

@@ -43,15 +43,12 @@ class TestLLMResponsePipe:
     
     accumulated_results: list[TestResult] = field(default_factory=list)
     
-    def get_generated_test(self, statements: list, questions: dict):
+    def get_generated_test(self, questions: dict):
         generated_test = {}
         for statement, question in questions.items():
             generated_test[question] = {
-                'answer': statement,
-                'required_to_pass': True
+                'answer_by_llm': statement
             }
-        if len(statements) != len(questions):
-            logger.error(f"Statements and questions are not equal in length. Statements: {len(statements)}: {statements}, Questions: {len(questions)}")
         if len(generated_test.items()) == 0:
             raise GenerateFactsException("No questions were generated.")
         
@@ -79,7 +76,7 @@ class TestLLMResponsePipe:
 
         result = get_json_from_response(response).parsed_content
         statements, questions = result.get("statements"), result.get("questions")
-        generated_test = json.dumps(self.get_generated_test(statements, questions))
+        generated_test = json.dumps(self.get_generated_test(questions))
         user_prompt_response = llm_response
         prompt_id = "user_prompt"
         if optional_params is not None:

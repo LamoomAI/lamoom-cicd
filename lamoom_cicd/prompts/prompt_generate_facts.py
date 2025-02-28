@@ -2,15 +2,17 @@ from lamoom import PipePrompt
 
 agent = PipePrompt(id='generate_facts')
 agent.add("""
-# IDEAL_ANSWER:
+You're generating statements for the provided text below.
+""", role='system')
+agent.add("""
+# TEXT_TO_GENERATE_STATEMENTS_TO:
 {ideal_answer}
-Please come up with a list of facts that can be extracted from the IDEAL_ANSWER. 
-generated_name - When? What? Why? How? Where? ... Generate a 3-7 word name containing the specific of the usecase based on your generated questions & answers. Do not include any personal information, like names... Think that you need to highlight specifics, more likely that prompt will have 100 tests.
 """, role='system')
 
 agent.add("""
-First, Please highlights AS MUCH important statements AS YOU CAN from the IDEAL_ANSWER, based on which you can compare the generated content.
-Secondly, write questions that will give facts as answers if you ask the ideal answer these questions.
+First, write out all the important statements from TEXT_TO_GENERATE_STATEMNTS_TO.
+Second, ask questions to each generated statement so that it produces a statement as an answer to the question.
+Third, give a name to the generated facts, such as the name of the test, like "when_what_why_how_who_what_generated_name".
 Use the next json format for the answer:
 ```json
 {

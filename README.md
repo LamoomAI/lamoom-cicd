@@ -22,8 +22,8 @@ This tool allows you to evaluate how well your LLM responses match an ideal answ
   **Example:**  
   ```json
   {
-    "prompt": "Explain blockchain to a beginner.",
-    "context": {},
+    "prompt": "Explain blockchain to a beginner {username}",
+    "context": {'username': 'James Bond'},
     "prompt_id": "beginner_blockchain"
   }
   ```
@@ -44,13 +44,10 @@ ideal_answer = (
     "Blockchain is like a digital notebook that everyone can see, but no one can secretly change. "
     "Imagine a shared Google Doc where every change is recorded forever, and no one can edit past entries."
 )
-optional_params = {
-    "prompt_id": f"test-{time.now()}"
-}
 
 lamoom_pipe = TestLLMResponsePipe(openai_key=os.environ.get("OPENAI_KEY"))
 # When llm_response is not passed, it defaults to None.
-result = lamoom_pipe.compare(ideal_answer, "Your LLM response here", optional_params=optional_params)
+result = lamoom_pipe.compare(ideal_answer, "Your LLM response here")
 
 # Print individual question details
 for question in result.questions:
@@ -97,6 +94,9 @@ lamoom_pipe.visualize_test_results()
 ```
 
 This function will generate a line chart with the x-axis representing the test instance number (as integers) and the y-axis representing the score percentage. Each line on the chart corresponds to a different `prompt_id`.
+
+## How does it work?
+
 
 ## Summary
 
