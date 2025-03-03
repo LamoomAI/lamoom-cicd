@@ -5,22 +5,20 @@ import dotenv
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 def test_compare():
-    ideal_answer = """Blockchain is like a digital notebook that everyone can see 
-            but no one can secretly change. Imagine a shared Google Doc where every change 
-            is recorded forever, and no one can erase or edit past entries. 
-            Instead of one company controlling it, thousands of computers around 
-            the world keep copies, making it nearly impossible to hack or fake. 
-            This is why it’s used for things like Bitcoin—to keep transactions 
-            secure and transparent without needing a bank in the middle."""
+    ideal_answer = """Headaches can have many causes, including stress, dehydration, 
+    lack of sleep, or more serious conditions like migraines or sinusitis. 
+    It's important to keep track of when the headache started, how long it lasts, 
+    and any other symptoms you have. If it's persistent or severe, you should 
+    see a doctor for a proper diagnosis."""
 
-    llm_response = """Blockchain is like a shared digital notebook where everyone has a copy.
-    New records (blocks) are added in order and can’t be changed or erased. 
-    Each block is securely locked with a code, and everyone in the network must agree 
-    before adding new information. This makes blockchain transparent, secure, and
-    tamper-proof, which is why it's used for things like cryptocurrency, secure transactions, 
-    and digital contracts."""    
+    llm_response = """
+    Headaches can stem from various factors such as stress, dehydration, insufficient sleep, 
+    or even more serious conditions like migraines or sinusitis. Keeping track of when 
+    the headache begins, its duration, and any accompanying symptoms is crucial. 
+    If the headache is persistent or severe, it's best to consult your doctor 
+    for a proper diagnosis."""    
     
-    optional_params =  {'prompt_id': "blockchain_prompt"}
+    optional_params =  {'prompt_id': "medical_help"}
 
     lamoom_pipe = TestLLMResponsePipe(openai_key=os.environ.get("OPENAI_KEY"))
     result = lamoom_pipe.compare(ideal_answer, llm_response, optional_params=optional_params)

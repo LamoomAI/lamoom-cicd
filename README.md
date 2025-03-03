@@ -15,7 +15,13 @@ This tool allows you to evaluate how well your LLM response matches your ideal a
   **Example:**  
   ```json
   {
+<<<<<<< Updated upstream
     "prompt_id": "blockchain_prompt"
+=======
+    "prompt": "Explain first actions when in case of heart attack under {conditions}",
+    "context": {'conditions': 'Singing karaoke all night'},
+    "prompt_id": "heart_attack_medical_help"
+>>>>>>> Stashed changes
   }
   ```
 
