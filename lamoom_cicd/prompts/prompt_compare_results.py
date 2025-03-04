@@ -25,6 +25,11 @@ First, go through each question and get real_answer on it with from TEXT_TO_ASK_
         "does_match_with_ideal_answer": true/false
     },
     ...
+    "last question from QUESTIONS_AND_ANSWERS": {
+        "real_answer": "answer from the TEXT_TO_ASK_QUESTIONS",
+        "ideal_answer": "rewritten ideal answer from QUESTIONS_AND_ANSWERS",
+        "does_match_with_ideal_answer": true/false
+    }
 }
 ```
 """, role='user')
