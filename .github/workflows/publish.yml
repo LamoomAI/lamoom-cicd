@@ -6,27 +6,18 @@ on:
       - closed
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   publish:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
-    container: python:3.11-slim
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
-
-    - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y curl build-essential git
-
-    - name: Configure Git
-      run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
 
     - name: Install Poetry
       run: pip install poetry
@@ -40,7 +31,13 @@ jobs:
     - name: Install Python libraries
       run: poetry install
 
+    - name: Configure Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+
     - name: Publish package and update version
+      if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
       env:
         PYPI_API_KEY: ${{ secrets.PYPI_API_KEY }}
       run: |
