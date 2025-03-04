@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "lamoom-cicd"
-version = "0.1.5"
+version = "0.1.6"
 description = "Library to test prompt quality"
 authors = ["Lamoom Engineering Team <engineering@lamoom.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-lamoom = "^0.1.34"
+lamoom = "^0.1.35"
 matplotlib = "^3.10.0"
 pandas = "^2.2.3"
 
