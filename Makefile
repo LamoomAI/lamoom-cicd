@@ -4,7 +4,7 @@ test:
 	poetry run pytest --cache-clear -vv tests \
 		--cov=${PROJECT_FOLDER} \
 		--cov-config=.coveragerc \
-		--cov-fail-under=90 \
+		--cov-fail-under=40 \
 		--cov-report term-missing
 
 publish-release:

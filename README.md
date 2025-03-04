@@ -15,7 +15,9 @@ This tool allows you to evaluate how well your LLM response matches your ideal a
   **Example:**  
   ```json
   {
-    "prompt_id": "blockchain_prompt"
+    "prompt": "Explain blockchain to a beginner {username}",
+    "context": {'username': 'James Bond'},
+    "prompt_id": "beginner_blockchain"
   }
   ```
 
@@ -34,15 +36,14 @@ from lamoom_cicd import TestLLMResponsePipe
 ideal_answer = "Your ideal answer here"  # Replace with the expected response
 llm_response = "Your LLM-generated response here"  # Replace with the model's actual response
 
-# Optional: If you have a prompt_id, you can link results to it
-optional_params = {
-    "prompt_id": "your_prompt_id"  # Replace with an actual prompt identifier if needed
-}
+ideal_answer = (
+    "Blockchain is like a digital notebook that everyone can see, but no one can secretly change. "
+    "Imagine a shared Google Doc where every change is recorded forever, and no one can edit past entries."
+)
 
 lamoom_pipe = TestLLMResponsePipe(openai_key=os.environ.get("OPENAI_KEY"))
-
-# Compare the ideal answer with the LLM's response
-result = lamoom_pipe.compare(ideal_answer, llm_response, optional_params=optional_params)
+# When llm_response is not passed, it defaults to None.
+result = lamoom_pipe.compare(ideal_answer, "Your LLM response here")
 
 # Print test questions details
 for question in result.questions:
@@ -88,5 +89,16 @@ lamoom_pipe.visualize_test_results()
 ```
 
 This function will generate a line chart with the x-axis representing the test instance number (as integers) and the y-axis representing the score percentage. Each line on the chart corresponds to a different `prompt_id`.
+
+## How does it work?
+
+
+## Summary
+
+- **ideal_answer**, **llm_response** are required parameters.
+- **optional_params** are optional, with `optional_params` offering extra configuration (like a custom prompt and a unique `prompt_id` for tests).
+- You can compare responses either manually or via CSV (which supports multiple test cases).
+- The tool accumulates results for each `prompt_id` across multiple calls.
+- Use the visualization function to see your test scores on an easy-to-read chart.
 
 Enjoy using the tool to refine and evaluate your LLM prompts!
