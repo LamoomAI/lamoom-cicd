@@ -1,12 +1,15 @@
 name: publish
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   publish:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-22.04
     container: python:3.11-slim
     steps:
