@@ -1,92 +1,114 @@
-# LLM Prompt Evaluation Tool
+# Lamoom-CICD: Your AI Quality Assurance Engineer 🚀  
+**Ensure Perfect LLM Responses - Before Your Users Notice Mistakes**
 
-This tool allows you to evaluate how well your LLM response matches your ideal answer by comparing generated questions (from ideal answer) and answers (from llm response). The tool also supports visualizing your test scores on a chart, with results automatically grouped by different prompt IDs.
+Tired of guessing if your AI's answers hit the mark? Lamoom-CICD acts as your 24/7 quality assurance team, automatically validating LLM responses against your standards. Get instant feedback and historical trends to continuously improve your prompts.
 
-## Key Parameters
+## Why Developers Love Us 💡
 
-- **ideal_answer: str (required):**  
-  The ideal answer for your prompt.
+✔ **Precision Testing** - AI-generated evaluation questions catch nuances human reviewers might miss  
+✔ **Historical Tracking** - Watch your prompt improvements materialize in real charts  
+✔ **CI/CD Ready** - Batch test multiple scenarios in one CSV file  
+✔ **Zero Configuration** - Get started with 3 lines of code  
 
-- **llm_response: str (required):**  
-  Your LLM's response.
-
-- **optional_params: dict (optional):**  
-  A JSON-like dictionary that may include extra details for the test. For now you can pass `prompt_id` key to link test results to this `prompt_id` 
-  **Example:**  
-  ```json
-  {
-    "prompt_id": "blockchain_prompt"
-  }
-  ```
-
-## Using the Tool
-
-
-### 1. Pass ideal_answer, llm_response
-User calls the `compare()` method by passing the `ideal_answer: str` and `llm_response: str` and (optionally) `optional_params: dict` parameters. `compare()` method returns an object with test results.
-
-**Example:**
+## Get Started in 60 Seconds 🚦
 
 ```python
 from lamoom_cicd import TestLLMResponsePipe
 
-# Users must provide these values (it doesn't matter how they obtain them)
-ideal_answer = "Your ideal answer here"  # Replace with the expected response
-llm_response = "Your LLM-generated response here"  # Replace with the model's actual response
+# 1. Define your gold standard and get LLM Response from your system
+ideal_answer = "Blockchain: A shared digital ledger that's transparent and immutable"
+get_llm_response = lambda: "Blockchain is like a public Google Doc that nobody can edit secretly"
 
-# Optional: If you have a prompt_id, you can link results to it
-optional_params = {
-    "prompt_id": "your_prompt_id"  # Replace with an actual prompt identifier if needed
-}
+# 2. Test your LLM's response
+lamoom = TestLLMResponsePipe(openai_key="sk-your-key-here")
+test_result = lamoom.compare(
+    ideal_answer, 
+    get_llm_response()
+)
 
-lamoom_pipe = TestLLMResponsePipe(openai_key=os.environ.get("OPENAI_KEY"))
-
-# Compare the ideal answer with the LLM's response
-result = lamoom_pipe.compare(ideal_answer, llm_response, optional_params=optional_params)
-
-# Print test questions details
-for question in result.questions:
-    print(question.to_dict())
-
-# Print final test score
-print(result.score.to_dict())
+# 3. See instant quality report
+print(f"Your AI scored {test_result.score}% ✅")
 ```
 
-### 2. Pass a CSV file
-You can also pass multiple test cases using a CSV file. The CSV file should contain the following columns:
+### Step 3: Understand Performance Trends
+```python
+lamoom.visualize_test_results()  # Launches interactive chart
+```
+![Sample Visualization](docs/media/sample_visualuzation.png)
 
-- **ideal_answer:** (Required) The ideal answer.
-- **llm_response:** (Required) Your LLM response.
-- **optional_params:** (Optional) A JSON string containing the optional parameters.  
+## Enterprise-Grade Testing Made Simple 🏗
 
-If multiple rows are added then multiple test will run.
-
-**Example CSV Content:**
-IMPORTANT: take notice of double quotes when putting json in a csv file!
-
+### Batch Test Multiple Scenarios
+`tests.csv`
 ```csv
-ideal_answer,llm_response, optional_params
-"Blockchain is a secure, immutable digital ledger.","Blockchain is like a shared Google Doc that records every change.","{""prompt_id"": ""blockchain_prompt""}", 
+ideal_answer,llm_response,optional_params
+"Blockchain is...", "Your LLM response", "{""prompt_id"": ""onboarding_flow""}"
+"Smart contracts...", "LLM answer here", "{""prompt_id"": ""dev_docs""}"
 ```
-
-**Usage Example:**
 
 ```python
-csv_file_path = "your_file.csv"
-lamoom_pipe = TestLLMResponsePipe(openai_key="your_key")
-accumulated_results: list = lamoom_pipe.compare_from_csv(csv_file_path)
+results = lamoom.compare_from_csv("tests.csv")  # Perfect for CI/CD pipelines
 ```
 
-### 3. Visualizing Test Scores
+### Deep Dive into Results
+```python
+latest_test = results[-1]
 
-After running tests, the results are automatically accumulated by `prompt_id`. To see a visual chart of test scores, use the provided visualization function.
+print(f"Overall score: {latest_test.score}%")
+for q in latest_test.questions:
+    print(f"Q: {q.question}")
+    print(f"Expected: {q.expected_answer}") 
+    print(f"Got: {q.actual_answer}")
+    print(f"Match: {'✅' if q.is_match else '❌'}")
+```
 
-**Example:**
+## How We Ensure Accuracy 🔍
+
+1. **Question Generation**  
+   Our AI analyzes your ideal answer to create validation questions like:  
+   _"What makes blockchain records tamper-resistant?"_
+
+2. **Answer Extraction**  
+   We scan both your ideal answer and LLM response for question answers
+
+3. **Logical Validation**  
+   Advanced comparison determines if answers match in meaning, not just wording
+
+```mermaid
+flowchart LR
+    A[Your Ideal Answer] --> B[Generated Ideal Statements & Questions to Each Statement]
+    C[Your LLM's Response] --> D[Extract Answers for Each Question]
+    B --> E[Compare Answers from C with Generated Ideal Statements]
+    E --> F[Calculate Score]
+```
+
+## Pro Tips for Maximum Impact 🚀
+
+🔹 **Track Iterations**  
+    Use `prompt_version` to compare different prompt versions over time  
+    
+🔹 **Context Matters**  
+    Include user-specific data in optional_params for creating CI/CD pipeline at https://lamoom.com
+    
+🔹 **Threshold Alerts**  
+    Flag any test scoring below 70% in your CI/CD pipeline  
 
 ```python
-lamoom_pipe.visualize_test_results()
+if test_result.score < 70:
+    send_alert(f"Prompt {test_result.prompt_id} needs attention!")
 ```
 
-This function will generate a line chart with the x-axis representing the test instance number (as integers) and the y-axis representing the score percentage. Each line on the chart corresponds to a different `prompt_id`.
+## Join Our Quality Revolution ❤️
 
-Enjoy using the tool to refine and evaluate your LLM prompts!
+**Found a bug?**  
+We'll fix it within 24 hours - [Open Issue](https://github.com/LamoomAI/lamoom-cicd/)
+
+**Want to contribute?**  
+We welcome PRs! Check our [Contribution Guide](CONTRIBUTING.md)
+
+**Need enterprise support?**  
+Email ask@lamoom.com for SLA guarantees and custom features
+
+---
+
+Made with ♥ by AI Quality Engineers at Lamoom. Let's build trustworthy AI together!

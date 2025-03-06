@@ -31,3 +31,17 @@ class TestResult:
     prompt_id: str
     questions: list[Question]
     score: Score
+    ideal_response: str
+    llm_response: str
+    optional_params: dict = None
+
+
+    def to_dict(self):
+        return {
+            "prompt_id": self.prompt_id,
+            "questions": [question.to_dict() for question in self.questions],
+            "score": self.score.to_dict(),
+            "ideal_response": self.ideal_response,
+            "llm_response": self.llm_response,
+            "optional_params": self.optional_params
+        }
